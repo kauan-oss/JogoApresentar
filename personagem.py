@@ -51,7 +51,7 @@ def gerar_candidato_aleatorio(indice=0):
 
 
 def rgb(valor):
-    return color.rgb(*valor)
+    return color.rgb32(*valor)
 
 
 def esfera(pai, pos, escala, cor, **kwargs):
@@ -113,8 +113,8 @@ class Lutador3D:
             esfera(p, (.17 * sx, 1.93, .306), (.20, .52, .09),
                    rgb((204, 209, 215)) if sx == -1 else roupa,
                    rotation_z=22 * sx)
-        esfera(p, (0, 1.83, .388), (.105, .38, .05), color.rgb(170, 35, 54))
-        esfera(p, (0, 2.02, .395), (.13, .13, .075), color.rgb(192, 43, 59))
+        esfera(p, (0, 1.83, .388), (.105, .38, .05), color.rgb32(170, 35, 54))
+        esfera(p, (0, 2.02, .395), (.13, .13, .075), color.rgb32(192, 43, 59))
 
         for sx in (-1, 1):
             braco = Entity(parent=p, position=(.50 * sx, 2.03, 0))
@@ -129,7 +129,7 @@ class Lutador3D:
             esfera(perna, (0, -.23, 0), (.34, .64, .37), calca)
             esfera(perna, (0, -.54, .0), (.31, .37, .34), calca)
             esfera(perna, (0, -.76, .015), (.28, .48, .31), calca)
-            esfera(perna, (0, -.95, .15), (.34, .22, .53), color.rgb(24, 25, 34))
+            esfera(perna, (0, -.95, .15), (.34, .22, .53), color.rgb32(24, 25, 34))
             self.pernas.append(perna)
 
         # Rosto tridimensional com nariz, orelhas, olhos e cabelo individualizado.
@@ -138,12 +138,12 @@ class Lutador3D:
         esfera(cabeca, (0, -.23, .125), (.56, .34, .47), pele)
         for sx in (-1, 1):
             esfera(cabeca, (.352 * sx, -.015, .0), (.20, .29, .19), pele)
-            esfera(cabeca, (.151 * sx, .035, .291), (.17, .16, .07), color.rgb(248, 247, 241))
-            esfera(cabeca, (.145 * sx, .032, .352), (.075, .095, .038), color.rgb(37, 45, 56))
+            esfera(cabeca, (.151 * sx, .035, .291), (.17, .16, .07), color.rgb32(248, 247, 241))
+            esfera(cabeca, (.145 * sx, .032, .352), (.075, .095, .038), color.rgb32(37, 45, 56))
             esfera(cabeca, (.151 * sx, .164, .304), (.22, .067, .08), self.cor_cabelo,
                    rotation_z=8 * sx)
         esfera(cabeca, (0, -.075, .372), (.19, .26, .21), pele)
-        esfera(cabeca, (0, -.272, .316), (.28, .046, .045), color.rgb(121, 66, 64))
+        esfera(cabeca, (0, -.272, .316), (.28, .046, .045), color.rgb32(121, 66, 64))
 
         estilo = self.dados.get("estilo_cabelo", "social")
         if estilo != "calvo":
@@ -161,26 +161,26 @@ class Lutador3D:
             for sx in (-1, 1):
                 esfera(cabeca, (.17 * sx, -.15, .347), (.19, .11, .07), self.cor_cabelo)
         if self.dados.get("oculos", False) or self.acessorio == "Óculos Escuros":
-            lente = color.rgb(17, 23, 33) if self.acessorio == "Óculos Escuros" else color.rgb(51, 67, 86)
+            lente = color.rgb32(17, 23, 33) if self.acessorio == "Óculos Escuros" else color.rgb32(51, 67, 86)
             for sx in (-1, 1):
                 esfera(cabeca, (.16 * sx, .053, .351), (.33, .23, .087), lente)
-            esfera(cabeca, (0, .07, .37), (.12, .047, .068), color.rgb(44, 44, 49))
+            esfera(cabeca, (0, .07, .37), (.12, .047, .068), color.rgb32(44, 44, 49))
 
         if self.acessorio == "Faixa Presidencial":
-            esfera(p, (0, 1.70, .41), (.13, 1.10, .09), color.rgb(24, 159, 72),
+            esfera(p, (0, 1.70, .41), (.13, 1.10, .09), color.rgb32(24, 159, 72),
                    rotation_z=-33)
-            esfera(p, (0, 1.70, .48), (.035, 1.05, .035), color.rgb(245, 210, 59),
+            esfera(p, (0, 1.70, .48), (.035, 1.05, .035), color.rgb32(245, 210, 59),
                    rotation_z=-33)
         elif self.acessorio == "Gravata Borboleta":
             for sx in (-1, 1):
-                esfera(p, (.14 * sx, 2.056, .44), (.29, .22, .11), color.rgb(207, 34, 48),
+                esfera(p, (.14 * sx, 2.056, .44), (.29, .22, .11), color.rgb32(207, 34, 48),
                        rotation_z=-22 * sx)
-            esfera(p, (0, 2.056, .49), (.14, .15, .13), color.rgb(137, 18, 34))
+            esfera(p, (0, 2.056, .49), (.14, .15, .13), color.rgb32(137, 18, 34))
         elif self.acessorio == "Chapéu Político":
             Entity(parent=cabeca, model=Cylinder(resolution=24, start=-.5), position=(0, .48, 0),
-                   scale=(.94, .095, .87), color=color.rgb(34, 42, 61), shader=basic_lighting_shader)
-            esfera(cabeca, (0, .65, 0), (.60, .38, .55), color.rgb(41, 50, 69))
-            esfera(cabeca, (0, .58, .30), (.57, .09, .10), color.rgb(222, 188, 57))
+                   scale=(.94, .095, .87), color=color.rgb32(34, 42, 61), shader=basic_lighting_shader)
+            esfera(cabeca, (0, .65, 0), (.60, .38, .55), color.rgb32(41, 50, 69))
+            esfera(cabeca, (0, .58, .30), (.57, .09, .10), color.rgb32(222, 188, 57))
 
     @property
     def x(self):
@@ -255,7 +255,7 @@ class Lutador3D:
                 self.esqueleto.rotation_y = 8 * gesto
         else:
             self.esqueleto.rotation_y = 0
-        self.corpo.color = color.rgb(224, 72, 79) if self.hit_tempo > 0 else self.cor_roupa
+        self.corpo.color = color.rgb32(224, 72, 79) if self.hit_tempo > 0 else self.cor_roupa
 
     def receber_golpe(self, dano, direcao):
         self.vida = max(0, self.vida - dano)
