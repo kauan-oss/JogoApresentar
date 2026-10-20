@@ -32,6 +32,7 @@ lutadores = []
 ui = []
 mensagem = None
 tempo_mensagem = 0
+last_hud_state = None
 
 # Arena tridimensional: piso, linhas de perspectiva e iluminação.
 Entity(model='plane', scale=(24,1,18), position=(0,0,0), color=color.rgb(70,75,85), texture='white_cube', texture_scale=(12,9), collider='box')
@@ -148,11 +149,13 @@ def criar_round():
     atualizar_hud()
 
 def atualizar_hud():
+    global last_hud_state
     limpar_ui()
     texto(f'{CANDIDATOS[idx1]["nome"]}  |  HP: {lutadores[0].vida}  |  ROUNDS: {vitorias1}', (-.86,.45), .9, color.azure)
     texto(f'{CANDIDATOS[idx2]["nome"]}  |  HP: {lutadores[1].vida}  |  ROUNDS: {vitorias2}', (.25,.45), .9, color.red)
     texto('P1: WASD + F soco + G chute     P2: Setas + K soco + L chute', (-.48,-.46), .8)
     texto('F11: tela cheia  |  ESC: menu', (-.18,-.49), .65, color.gold)
+    last_hud_state = (lutadores[0].vida, lutadores[1].vida, vitorias1, vitorias2)
 
 def menu():
     global estado
@@ -188,7 +191,7 @@ def selecionar(d1=0,d2=0,da=0):
     menu()
 
 def atualizar():
-    global estado, vitorias1, vitorias2
+    global estado, vitorias1, vitorias2, last_hud_state
     if estado != 'luta' or len(lutadores)!=2: return
     p1,p2=lutadores
     p1.mover(); p2.mover()
@@ -205,7 +208,9 @@ def atualizar():
         else:
             criar_round()
     else:
-        atualizar_hud()
+        hud_state = (p1.vida, p2.vida, vitorias1, vitorias2)
+        if hud_state != last_hud_state:
+            atualizar_hud()
 
 def input(tecla):
     global idx1,idx2,ac1,ac2
