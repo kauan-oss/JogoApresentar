@@ -1,403 +1,267 @@
-import pygame
+"""Elenco e modelos 3D procedurais. Nenhum sprite ou Pygame e necessario."""
+from __future__ import annotations
+
 import math
 import random
+from ursina import Entity, Vec3, color, destroy
 
-ACESSORIOS = [
-    {"nome": "Nenhum", "cor": None},
-    {"nome": "Óculos Escuros", "cor": (15, 15, 15)},
-    {"nome": "Faixa Presidencial", "cor": (255, 215, 0)},
-    {"nome": "Gravata Borboleta", "cor": (220, 20, 20)},
-    {"nome": "Chapéu Político", "cor": (40, 40, 50)},
-]
+ACESSORIOS = ["Nenhum", "Óculos Escuros", "Faixa Presidencial", "Gravata Borboleta", "Chapéu Político"]
 
 TONS_PELE = [(240, 194, 142), (255, 220, 177), (198, 134, 66), (140, 85, 39)]
 CORES_TERNO = [(25, 25, 30), (15, 40, 110), (240, 210, 30), (30, 45, 80), (20, 35, 90), (25, 35, 65)]
 CORES_CABELO = [(30, 25, 20), (235, 235, 235), (200, 200, 200), (160, 160, 165)]
 
-def checar_tecla(teclas, controle):
-    """Verifica de forma segura se uma tecla individual ou lista de teclas está pressionada"""
-    if controle is None:
-        return False
-    if isinstance(controle, (list, tuple, set)):
-        for k in controle:
-            try:
-                if teclas[k]:
-                    return True
-            except (IndexError, KeyError, TypeError):
-                pass
-        return False
-    try:
-        return bool(teclas[controle])
-    except (IndexError, KeyError, TypeError):
-        return False
-
-def gerar_candidato_aleatorio(id_num):
-    nomes = ["Senador", "Ministro", "Governador", "Deputado", "Prefeito", "Embaixador"]
-    sobrenomes = ["Silva", "Santos", "Oliveira", "Souza", "Pereira", "Lima", "Ferreira", "Costa"]
-    nome_gerado = f"{random.choice(nomes)} {random.choice(sobrenomes)}"
-    
-    return {
-        "nome": nome_gerado,
-        "cor_terno": random.choice(CORES_TERNO),
-        "cor_camiseta": random.choice([(10, 10, 10), (240, 240, 240)]),
-        "cor_calca": random.choice([(110, 150, 200), (30, 30, 35), (15, 40, 110)]),
-        "cor_pele": random.choice(TONS_PELE),
-        "cor_cabelo": random.choice(CORES_CABELO),
-        "estilo_cabelo": random.choice(["social", "grisalho", "topete", "calvo", "curto", "despojado"]),
-        "velocidade": round(random.uniform(5.5, 8.5), 1),
-        "forca": random.randint(8, 16),
-        "imagem_path": None
-    }
 
 def gerar_candidatos_padrao():
     return [
-        {
-            "nome": "Renan Santos", 
-            "cor_terno": (25, 25, 30),
-            "cor_camiseta": (10, 10, 10),
-            "cor_calca": (110, 150, 200),
-            "cor_pele": TONS_PELE[0], 
-            "cor_cabelo": (30, 25, 20), 
-            "estilo_cabelo": "despojado", 
-            "velocidade": 8.0, 
-            "forca": 14,
-            # "imagem_path": "assets/candidato_renan.png"
-        },
-        {
-            "nome": "Lula", 
-            "cor_terno": (15, 40, 110),
-            "cor_camiseta": (240, 240, 240),
-            "cor_calca": (15, 40, 110),
-            "cor_pele": TONS_PELE[0], 
-            "cor_cabelo": (235, 235, 235),
-            "estilo_cabelo": "grisalho", 
-            "velocidade": 6.8, 
-            "forca": 13,
-            # "imagem_path": "assets/candidato_lula.png"
-        },
-        {
-            "nome": "Flávio", 
-            "cor_terno": (240, 210, 30),
-            "cor_camiseta": (240, 210, 30), 
-            "cor_calca": (110, 150, 200),
-            "cor_pele": TONS_PELE[0], 
-            "cor_cabelo": (35, 25, 20), 
-            "estilo_cabelo": "social", 
-            "velocidade": 7.6, 
-            "forca": 12,
-            # "imagem_path": "assets/candidato_flavio.png"
-        },
-        {
-            "nome": "Augusto Cury", 
-            "cor_terno": (30, 45, 80),
-            "cor_camiseta": (180, 210, 240),
-            "cor_calca": (50, 50, 55),
-            "cor_pele": TONS_PELE[0], 
-            "cor_cabelo": (40, 35, 30), 
-            "estilo_cabelo": "social", 
-            "velocidade": 6.2, 
-            "forca": 11,
-            # "imagem_path": "assets/candidato_cury.png"
-        },
-        {
-            "nome": "Caiado", 
-            "cor_terno": (20, 35, 90),
-            "cor_camiseta": (240, 240, 240),
-            "cor_calca": (20, 35, 90),
-            "cor_pele": TONS_PELE[0], 
-            "cor_cabelo": (210, 210, 210),
-            "estilo_cabelo": "grisalho", 
-            "velocidade": 7.0, 
-            "forca": 14,
-            # "imagem_path": "assets/candidato_caiado.png"
-        },
-        {
-            "nome": "Zema", 
-            "cor_terno": (25, 35, 65),
-            "cor_camiseta": (25, 35, 65), 
-            "cor_calca": (40, 40, 50),
-            "cor_pele": TONS_PELE[0], 
-            "cor_cabelo": (170, 170, 175),
-            "estilo_cabelo": "curto", 
-            "velocidade": 7.8, 
-            "forca": 10,
-            # "imagem_path": "assets/candidato_zema.png"
-        },
+        dict(nome="Renan Santos", cor_terno=(32, 35, 44), cor_camiseta=(24, 29, 36),
+             cor_calca=(78, 112, 157), cor_pele=TONS_PELE[0], cor_cabelo=(33, 25, 21),
+             estilo_cabelo="despojado", velocidade=7.7, forca=14, barba=True, oculos=True),
+        dict(nome="Lula", cor_terno=(24, 65, 133), cor_camiseta=(238, 240, 237),
+             cor_calca=(24, 56, 112), cor_pele=TONS_PELE[0], cor_cabelo=(226, 225, 220),
+             estilo_cabelo="grisalho", velocidade=6.8, forca=13, barba=True),
+        dict(nome="Flávio", cor_terno=(214, 186, 51), cor_camiseta=(250, 232, 144),
+             cor_calca=(80, 117, 172), cor_pele=TONS_PELE[0], cor_cabelo=(54, 40, 32),
+             estilo_cabelo="social", velocidade=7.3, forca=12),
+        dict(nome="Augusto Cury", cor_terno=(39, 56, 92), cor_camiseta=(190, 215, 236),
+             cor_calca=(55, 62, 73), cor_pele=TONS_PELE[0], cor_cabelo=(65, 55, 49),
+             estilo_cabelo="social", velocidade=6.4, forca=11, oculos=True),
+        dict(nome="Caiado", cor_terno=(28, 49, 108), cor_camiseta=(239, 242, 242),
+             cor_calca=(30, 49, 97), cor_pele=TONS_PELE[0], cor_cabelo=(215, 214, 205),
+             estilo_cabelo="grisalho", velocidade=7.0, forca=14),
+        dict(nome="Zema", cor_terno=(36, 48, 77), cor_camiseta=(71, 91, 119),
+             cor_calca=(43, 51, 67), cor_pele=TONS_PELE[0], cor_cabelo=(164, 160, 156),
+             estilo_cabelo="curto", velocidade=7.7, forca=10, oculos=True),
     ]
 
-gerar_candidato_padrao = gerar_candidatos_padrao
-PERSONAGENS_BASE = gerar_candidatos_padrao()
 
-class Lutador:
-    def __init__(self, x, y, controles, dados, acessorio, virado_direita):
-        self.x = float(x)
-        self.y = float(y)
-        self.vx = 0.0
-        self.vy = 0.0
-        
-        self.largura_base = 70
-        self.altura_base = 140
-        self.rect = pygame.Rect(self.x, self.y, self.largura_base, self.altura_base)
-        
-        self.nome = dados.get("nome", "Candidato")
-        self.cor_terno = dados.get("cor_terno", (30, 30, 30))
-        self.cor_camiseta = dados.get("cor_camiseta", (240, 240, 240))
-        self.cor_calca = dados.get("cor_calca", (20, 20, 25))
-        self.cor_pele = dados.get("cor_pele", TONS_PELE[0])
-        self.cor_cabelo = dados.get("cor_cabelo", (30, 30, 30))
-        self.estilo_cabelo = dados.get("estilo_cabelo", "social")
-        self.velocidade_max = dados.get("velocidade", 7.0)
-        self.forca = dados.get("forca", 10)
+def gerar_candidato_aleatorio(indice=0):
+    primeiros = ["Senador", "Ministro", "Governador", "Deputado", "Prefeito", "Embaixador"]
+    ultimos = ["Silva", "Santos", "Oliveira", "Souza", "Pereira", "Lima"]
+    return dict(
+        nome=f"{primeiros[indice % len(primeiros)]} {random.choice(ultimos)}",
+        cor_terno=random.choice(CORES_TERNO), cor_camiseta=(237, 238, 242),
+        cor_calca=random.choice(CORES_TERNO), cor_pele=random.choice(TONS_PELE),
+        cor_cabelo=random.choice(CORES_CABELO),
+        estilo_cabelo=random.choice(["social", "grisalho", "topete", "calvo", "curto", "despojado"]),
+        velocidade=round(random.uniform(6.3, 8.1), 1), forca=random.randint(10, 15),
+        barba=random.choice([True, False]), oculos=False,
+    )
+
+
+def rgb(valor):
+    return color.rgb(*valor)
+
+
+def esfera(pai, pos, escala, cor, **kwargs):
+    """Volumes elipsoidais com silhuetas suaves, em vez de blocos."""
+    return Entity(parent=pai, model="sphere", position=pos, scale=escala,
+                  color=cor, **kwargs)
+
+
+class Lutador3D:
+    DURACAO = {"soco": 0.42, "chute": 0.57}
+    RECARGA = {"soco": 0.55, "chute": 0.74}
+
+    def __init__(self, dados, acessorio, x, z=0, lado=1):
+        self.dados = dados
+        self.nome = dados["nome"]
         self.acessorio = acessorio
-        
-        self.atacando = False
-        self.tipo_ataque = None
-        self.ja_causou_dano = False
+        self.lado = lado
         self.vida = 100
-        self.controles = controles
-        self.virado_direita = virado_direita
-        self.cooldown_ataque = 0
-        self.escala = 1.0
-        
-        # Variáveis do texto flutuante de impacto
-        self.texto_impacto = ""
-        self.tempo_texto_impacto = 0
-        
-        self.imagem_sprite = None
-        if dados.get("imagem_path"):
-            try:
-                img = pygame.image.load(dados["imagem_path"]).convert_alpha()
-                self.imagem_sprite = img
-            except:
-                self.imagem_sprite = None
+        self.forca = dados["forca"]
+        self.velocidade = dados["velocidade"] * 0.56
+        self.direcao = 1 if lado == 1 else -1
+        self.root = Entity(position=(x, 0, z), rotation_y=90 * self.direcao)
+        self.cor_roupa = rgb(dados["cor_terno"])
+        self.cor_calca = rgb(dados["cor_calca"])
+        self.cor_pele = rgb(dados["cor_pele"])
+        self.cor_cabelo = rgb(dados["cor_cabelo"])
 
-        self.tempo_andando = 0.0
-        self.tempo_idle = 0.0
-        self.tempo_hit = 0
-        self.progresso_ataque = 0.0
+        self.esqueleto = Entity(parent=self.root)
+        self.bracos = []
+        self.pernas = []
+        self.corpo = None
+        self._montar_modelo()
 
-    def atualizar_escala(self, y_min, y_max):
-        fator = (self.y - y_min) / max(1, (y_max - y_min))
-        self.escala = 0.65 + (fator * 0.45)
-        
-        self.rect.width = int(self.largura_base * self.escala)
-        self.rect.height = int(self.altura_base * self.escala)
-        self.rect.x = int(self.x)
-        self.rect.y = int(self.y)
+        self.vx = 0.0
+        self.vz = 0.0
+        self.andando = False
+        self.tempo = random.uniform(0, 6)
+        self.ataque = None
+        self.ataque_tempo = 0.0
+        self.ataque_total = 0.0
+        self.recarga = 0.0
+        self.ja_atingiu = False
+        self.hit_tempo = 0.0
+        self.impacto_recuo = 0.0
 
-    def mover(self, y_min, y_max):
-        ACELERACAO = 1.3
-        FRICCAO = 0.80
-        
-        ax, ay = 0.0, 0.0
-        teclas = pygame.key.get_pressed()
+    def _montar_modelo(self):
+        p = self.esqueleto
+        roupa = self.cor_roupa
+        pele = self.cor_pele
+        calca = self.cor_calca
 
-        if checar_tecla(teclas, self.controles.get('esquerda')):
-            ax -= ACELERACAO
-            self.virado_direita = False
-        if checar_tecla(teclas, self.controles.get('direita')):
-            ax += ACELERACAO
-            self.virado_direita = True
-        if checar_tecla(teclas, self.controles.get('cima')):
-            ay -= ACELERACAO * 0.6
-        if checar_tecla(teclas, self.controles.get('baixo')):
-            ay += ACELERACAO * 0.6
+        # Quadril, paleto e ombros: todos os contornos sao arredondados.
+        esfera(p, (0, 1.03, 0), (.75, .43, .48), roupa)
+        self.corpo = esfera(p, (0, 1.69, 0), (.91, 1.23, .58), roupa)
+        esfera(p, (0, 1.68, .278), (.35, .86, .115), rgb(self.dados["cor_camiseta"]))
+        esfera(p, (0, 2.23, 0), (.26, .26, .25), pele)
+        # Gola, lapelas e gravata em volumes ovais/triangulares.
+        for sx in (-1, 1):
+            esfera(p, (.17 * sx, 1.93, .306), (.20, .52, .09),
+                   rgb((204, 209, 215)) if sx == -1 else roupa,
+                   rotation_z=22 * sx)
+        esfera(p, (0, 1.83, .388), (.105, .38, .05), color.rgb(170, 35, 54))
+        esfera(p, (0, 2.02, .395), (.13, .13, .075), color.rgb(192, 43, 59))
 
-        self.vx = (self.vx + ax) * FRICCAO
-        self.vy = (self.vy + ay) * FRICCAO
+        for sx in (-1, 1):
+            braco = Entity(parent=p, position=(.50 * sx, 2.03, 0))
+            esfera(braco, (0, -.25, 0), (.35, .62, .36), roupa)
+            esfera(braco, (0, -.55, 0), (.29, .32, .32), roupa)
+            esfera(braco, (0, -.78, .04), (.26, .45, .28), roupa)
+            esfera(braco, (0, -1.04, .10), (.26, .25, .28), pele)
+            braco.rotation_z = 8 * sx
+            self.bracos.append(braco)
 
-        v_total = math.hypot(self.vx, self.vy)
-        if v_total > self.velocidade_max:
-            fator = self.velocidade_max / v_total
-            self.vx *= fator
-            self.vy *= fator
+            perna = Entity(parent=p, position=(.21 * sx, 1.00, 0))
+            esfera(perna, (0, -.23, 0), (.34, .64, .37), calca)
+            esfera(perna, (0, -.54, .0), (.31, .37, .34), calca)
+            esfera(perna, (0, -.76, .015), (.28, .48, .31), calca)
+            esfera(perna, (0, -.95, .15), (.34, .22, .53), color.rgb(24, 25, 34))
+            self.pernas.append(perna)
 
-        self.x += self.vx
-        self.y += self.vy
+        # Rosto tridimensional com nariz, orelhas, olhos e cabelo individualizado.
+        cabeca = Entity(parent=p, position=(0, 2.66, .015))
+        esfera(cabeca, (0, 0, 0), (.71, .81, .65), pele)
+        esfera(cabeca, (0, -.23, .125), (.56, .34, .47), pele)
+        for sx in (-1, 1):
+            esfera(cabeca, (.352 * sx, -.015, .0), (.20, .29, .19), pele)
+            esfera(cabeca, (.151 * sx, .035, .291), (.17, .16, .07), color.rgb(248, 247, 241))
+            esfera(cabeca, (.145 * sx, .032, .352), (.075, .095, .038), color.rgb(37, 45, 56))
+            esfera(cabeca, (.151 * sx, .164, .304), (.22, .067, .08), self.cor_cabelo,
+                   rotation_z=8 * sx)
+        esfera(cabeca, (0, -.075, .372), (.19, .26, .21), pele)
+        esfera(cabeca, (0, -.272, .316), (.28, .046, .045), color.rgb(121, 66, 64))
 
-        self.y = max(y_min, min(y_max - self.rect.height, self.y))
+        estilo = self.dados.get("estilo_cabelo", "social")
+        if estilo != "calvo":
+            esfera(cabeca, (0, .321, -.035), (.737, .31, .657), self.cor_cabelo)
+            if estilo in ("topete", "despojado"):
+                for i in range(5):
+                    xx = (i - 2) * .125
+                    yy = .40 + (.13 if estilo == "topete" else random.Random(i).uniform(.02, .14))
+                    esfera(cabeca, (xx, yy, .17), (.27, .21, .28), self.cor_cabelo,
+                           rotation_z=(i - 2) * -13)
+            if estilo in ("curto", "grisalho"):
+                esfera(cabeca, (0, .31, .17), (.64, .20, .37), self.cor_cabelo)
+        if self.dados.get("barba", False):
+            esfera(cabeca, (0, -.295, .207), (.51, .19, .35), self.cor_cabelo)
+            for sx in (-1, 1):
+                esfera(cabeca, (.17 * sx, -.15, .347), (.19, .11, .07), self.cor_cabelo)
+        if self.dados.get("oculos", False) or self.acessorio == "Óculos Escuros":
+            lente = color.rgb(17, 23, 33) if self.acessorio == "Óculos Escuros" else color.rgb(51, 67, 86)
+            for sx in (-1, 1):
+                esfera(cabeca, (.16 * sx, .053, .351), (.33, .23, .087), lente)
+            esfera(cabeca, (0, .07, .37), (.12, .047, .068), color.rgb(44, 44, 49))
 
-        soco_pressionado = checar_tecla(teclas, self.controles.get('soco'))
-        chute_pressionado = checar_tecla(teclas, self.controles.get('chute'))
+        if self.acessorio == "Faixa Presidencial":
+            esfera(p, (0, 1.70, .41), (.13, 1.10, .09), color.rgb(24, 159, 72),
+                   rotation_z=-33)
+            esfera(p, (0, 1.70, .48), (.035, 1.05, .035), color.rgb(245, 210, 59),
+                   rotation_z=-33)
+        elif self.acessorio == "Gravata Borboleta":
+            for sx in (-1, 1):
+                esfera(p, (.14 * sx, 2.056, .44), (.29, .22, .11), color.rgb(207, 34, 48),
+                       rotation_z=-22 * sx)
+            esfera(p, (0, 2.056, .49), (.14, .15, .13), color.rgb(137, 18, 34))
+        elif self.acessorio == "Chapéu Político":
+            Entity(parent=cabeca, model="cylinder", position=(0, .48, 0),
+                   scale=(.94, .095, .87), color=color.rgb(34, 42, 61))
+            esfera(cabeca, (0, .65, 0), (.60, .38, .55), color.rgb(41, 50, 69))
+            esfera(cabeca, (0, .58, .30), (.57, .09, .10), color.rgb(222, 188, 57))
 
-        if soco_pressionado and self.cooldown_ataque == 0:
-            self.atacando = True
-            self.tipo_ataque = "soco"
-            self.cooldown_ataque = 24
-            self.ja_causou_dano = False
-            self.progresso_ataque = 1.0
+    @property
+    def x(self):
+        return self.root.x
 
-        elif chute_pressionado and self.cooldown_ataque == 0:
-            self.atacando = True
-            self.tipo_ataque = "chute"
-            self.cooldown_ataque = 30
-            self.ja_causou_dano = False
-            self.progresso_ataque = 1.0
+    @property
+    def z(self):
+        return self.root.z
 
-        if self.cooldown_ataque > 0:
-            self.cooldown_ataque -= 1
-            self.progresso_ataque = self.cooldown_ataque / (24.0 if self.tipo_ataque == "soco" else 30.0)
-        else:
-            self.atacando = False
-            self.tipo_ataque = None
+    def olhar_para(self, outro):
+        dx = outro.x - self.x
+        if abs(dx) > .12:
+            self.direcao = 1 if dx > 0 else -1
+            self.root.rotation_y = 90 * self.direcao
 
-        if self.tempo_hit > 0:
-            self.tempo_hit -= 1
+    def andar(self, eixo_x, eixo_z, dt):
+        mag = math.hypot(eixo_x, eixo_z)
+        if mag > 1:
+            eixo_x /= mag
+            eixo_z /= mag
+        fator = min(1, dt * 11)
+        self.vx += (eixo_x * self.velocidade - self.vx) * fator
+        self.vz += (eixo_z * self.velocidade * .76 - self.vz) * fator
+        if self.hit_tempo > 0:
+            self.vx *= .55
+            self.vz *= .55
+        self.root.x = max(-7.35, min(7.35, self.root.x + self.vx * dt))
+        self.root.z = max(-3.25, min(3.25, self.root.z + self.vz * dt))
+        self.andando = (abs(self.vx) + abs(self.vz)) > .26
 
-        if abs(self.vx) > 0.3 or abs(self.vy) > 0.3:
-            self.tempo_andando += 0.2
-        else:
-            self.tempo_andando = 0.0
-            
-        self.tempo_idle += 0.05
-        self.atualizar_escala(y_min, y_max)
+    def iniciar_ataque(self, tipo):
+        if self.vida <= 0 or self.recarga > 0 or self.hit_tempo > 0:
+            return False
+        if tipo not in self.DURACAO:
+            return False
+        self.ataque = tipo
+        self.ataque_tempo = 0
+        self.ataque_total = self.DURACAO[tipo]
+        self.recarga = self.RECARGA[tipo]
+        self.ja_atingiu = False
+        return True
 
-    def desenhar(self, tela):
-        e = self.escala
-        cx = self.rect.centerx
-        cy = int(self.y + self.altura_base * e)
-        top_y = self.rect.y
-        dir_frente = 1 if self.virado_direita else -1
-        
-        # 1. Sombra 3D
-        sombra_w = int(self.rect.width * 0.9)
-        sombra_h = int(14 * e)
-        sombra_surf = pygame.Surface((sombra_w, sombra_h), pygame.SRCALPHA)
-        pygame.draw.ellipse(sombra_surf, (0, 0, 0, 110), (0, 0, sombra_w, sombra_h))
-        tela.blit(sombra_surf, (cx - sombra_w // 2, cy - sombra_h // 2))
-
-        if self.imagem_sprite:
-            img_scaled = pygame.transform.scale(self.imagem_sprite, (self.rect.width, self.rect.height))
-            if not self.virado_direita:
-                img_scaled = pygame.transform.flip(img_scaled, True, False)
-            tela.blit(img_scaled, (self.rect.x, top_y))
-        else:
-            cor_terno = (255, 80, 80) if self.tempo_hit > 0 and self.tempo_hit % 4 < 2 else self.cor_terno
-            bobbing = math.sin(self.tempo_idle) * 3 * e
-
-            # 2. Pernas
-            y_quadril = top_y + int(85 * e + bobbing)
-            larg_perna = int(12 * e)
-            alt_perna = int(45 * e)
-
-            if self.atacando and self.tipo_ataque == "chute":
-                extensao = math.sin((1.0 - self.progresso_ataque) * math.pi)
-                pygame.draw.line(tela, self.cor_calca, (cx - dir_frente * int(10 * e), y_quadril), (cx - dir_frente * int(10 * e), y_quadril + alt_perna), larg_perna)
-                pygame.draw.circle(tela, (15, 15, 20), (cx - dir_frente * int(10 * e), y_quadril + alt_perna), int(7 * e))
-
-                chute_x = cx + dir_frente * int((20 + extensao * 50) * e)
-                chute_y = y_quadril + int(10 * e) - int(extensao * 15 * e)
-                pygame.draw.line(tela, self.cor_calca, (cx, y_quadril), (chute_x, chute_y), int(14 * e))
-                pygame.draw.circle(tela, (15, 15, 20), (int(chute_x), int(chute_y)), int(9 * e))
+    def animar(self, dt):
+        self.tempo += dt
+        self.recarga = max(0, self.recarga - dt)
+        self.hit_tempo = max(0, self.hit_tempo - dt)
+        if self.ataque:
+            self.ataque_tempo += dt
+            if self.ataque_tempo >= self.ataque_total:
+                self.ataque = None
+        fase = math.sin(self.tempo * 11) if self.andando else 0
+        bob = math.sin(self.tempo * 2.6) * .023 + abs(fase) * .045
+        self.esqueleto.y = bob
+        self.esqueleto.rotation_z = (math.sin(self.tempo * 2.2) * 1.2
+                                    + (10 if self.hit_tempo > 0 else 0) * -self.direcao)
+        for i, perna in enumerate(self.pernas):
+            perna.rotation_x = (fase * (24 if i == 0 else -24))
+            perna.rotation_z = (3 if i == 0 else -3)
+        for i, braco in enumerate(self.bracos):
+            braco.rotation_x = fase * (-16 if i == 0 else 16)
+            braco.rotation_z = (-8 if i == 0 else 8)
+        if self.ataque:
+            t = min(1, self.ataque_tempo / self.ataque_total)
+            gesto = max(0, math.sin(t * math.pi)) ** .65
+            if self.ataque == "soco":
+                self.bracos[1].rotation_x = -97 * gesto
+                self.bracos[1].rotation_z = -16
+                self.esqueleto.rotation_y = -10 * gesto
             else:
-                angulo_perna = math.sin(self.tempo_andando) * 25
-                for i, mult in enumerate([-1, 1]):
-                    ang = math.radians(angulo_perna * mult if abs(self.vx) > 0.3 or abs(self.vy) > 0.3 else 0)
-                    px_fim = cx + mult * int(12 * e) + math.sin(ang) * alt_perna
-                    py_fim = y_quadril + math.cos(ang) * alt_perna
-                    pygame.draw.line(tela, self.cor_calca, (cx + mult * int(10 * e), y_quadril), (px_fim, py_fim), larg_perna)
-                    pygame.draw.circle(tela, (15, 15, 20), (int(px_fim), int(py_fim)), int(7 * e))
+                self.pernas[1].rotation_x = -83 * gesto
+                self.bracos[0].rotation_x = 25 * gesto
+                self.esqueleto.rotation_y = 8 * gesto
+        else:
+            self.esqueleto.rotation_y = 0
+        self.corpo.color = color.rgb(224, 72, 79) if self.hit_tempo > 0 else self.cor_roupa
 
-            # 3. Tronco
-            tronco_rect = pygame.Rect(cx - int(22 * e), top_y + int(40 * e + bobbing), int(44 * e), int(50 * e))
-            pygame.draw.rect(tela, cor_terno, tronco_rect, border_radius=int(6 * e))
-            pygame.draw.rect(tela, self.cor_camiseta, (cx - int(10 * e), top_y + int(42 * e + bobbing), int(20 * e), int(46 * e)))
+    def receber_golpe(self, dano, direcao):
+        self.vida = max(0, self.vida - dano)
+        self.hit_tempo = .28
+        self.root.x = max(-7.35, min(7.35, self.root.x + .30 * direcao))
+        self.vx = 0
+        self.vz = 0
 
-            if self.nome == "Zema":
-                pygame.draw.rect(tela, (240, 110, 20), (cx - int(12 * e), top_y + int(40 * e + bobbing), int(24 * e), int(5 * e)))
-            elif self.nome in ["Lula", "Caiado"]:
-                pt1 = (cx - int(18 * e), top_y + int(42 * e + bobbing))
-                pt2 = (cx + int(18 * e), top_y + int(85 * e + bobbing))
-                pygame.draw.line(tela, (20, 160, 40), pt1, pt2, max(4, int(9 * e)))
-                pygame.draw.line(tela, (255, 215, 0), pt1, pt2, max(2, int(4 * e)))
-
-            # Broches e Números
-            numeros = {"Renan Santos": "R14", "Lula": "13", "Flávio": "22", "Augusto Cury": "70", "Caiado": "55", "Zema": "30"}
-            if self.nome in numeros:
-                texto_numero = numeros[self.nome]
-                pos_badge_x = cx - int(14 * e) if self.virado_direita else cx + int(6 * e)
-                pos_badge_y = top_y + int(54 * e + bobbing)
-
-                cor_fundo_badge = (255, 215, 0)
-                cor_texto = (0, 0, 0)
-                if self.nome == "Lula":
-                    cor_fundo_badge = (210, 30, 30)
-                    cor_texto = (255, 255, 255)
-                elif self.nome == "Flávio":
-                    cor_fundo_badge = (20, 20, 25)
-                    cor_texto = (255, 215, 0)
-
-                pygame.draw.circle(tela, cor_fundo_badge, (pos_badge_x, pos_badge_y), int(8 * e))
-                fonte_badge = pygame.font.SysFont('Arial', max(7, int(9 * e)), bold=True)
-                txt_num = fonte_badge.render(texto_numero, True, cor_texto)
-                tela.blit(txt_num, (pos_badge_x - txt_num.get_width() // 2, pos_badge_y - txt_num.get_height() // 2))
-
-            # 4. Cabeça
-            raio_cabeca = int(18 * e)
-            centro_cabeca = (cx, top_y + int(24 * e + bobbing))
-            pygame.draw.circle(tela, self.cor_pele, centro_cabeca, raio_cabeca)
-
-            if self.nome == "Lula":
-                pygame.draw.arc(tela, self.cor_cabelo, (cx - raio_cabeca, centro_cabeca[1] - int(4*e), raio_cabeca * 2, raio_cabeca * 2), math.pi, 2 * math.pi, int(10 * e))
-
-            if self.estilo_cabelo != "calvo":
-                pygame.draw.arc(tela, self.cor_cabelo, (cx - raio_cabeca - 2, centro_cabeca[1] - raio_cabeca - int(3*e), raio_cabeca * 2 + 4, raio_cabeca * 2), 0, math.pi + 0.5, int(11 * e))
-
-            if self.nome in ["Augusto Cury", "Zema", "Renan Santos"]:
-                ox = cx + int(dir_frente * 3 * e)
-                oy = centro_cabeca[1] - int(2 * e)
-                cor_oculos = (15, 15, 15) if self.nome == "Renan Santos" else (50, 50, 60)
-                pygame.draw.rect(tela, cor_oculos, (ox - int(12 * e), oy - int(4 * e), int(22 * e), int(9 * e)), border_radius=2)
-            else:
-                dir_x = 4 * e if self.virado_direita else -4 * e
-                pygame.draw.circle(tela, (20, 20, 20), (int(cx + dir_x), int(centro_cabeca[1] - 2 * e)), max(1, int(3 * e)))
-
-            # 5. Braços
-            y_ombro = top_y + int(48 * e + bobbing)
-
-            if self.atacando and self.tipo_ataque == "soco":
-                extensao = math.sin((1.0 - self.progresso_ataque) * math.pi)
-                mao_x = cx + dir_frente * int((20 + extensao * 55) * e)
-                mao_y = y_ombro + int(5 * e)
-
-                pygame.draw.line(tela, cor_terno, (cx, y_ombro), (mao_x, mao_y), int(14 * e))
-                pygame.draw.circle(tela, self.cor_pele, (int(mao_x), int(mao_y)), int(11 * e))
-                pygame.draw.circle(tela, (255, 215, 0), (int(mao_x), int(mao_y)), int(6 * e), width=2)
-            else:
-                pygame.draw.line(tela, cor_terno, (cx - int(12 * e), y_ombro), (cx + dir_frente * int(15 * e), y_ombro + int(20 * e)), int(10 * e))
-
-            # Acessórios
-            if self.acessorio["nome"] == "Óculos Escuros":
-                ox = cx + int(dir_frente * 3 * e)
-                oy = centro_cabeca[1] - int(2 * e)
-                pygame.draw.rect(tela, (15, 15, 15), (ox - int(12 * e), oy - int(4 * e), int(22 * e), int(9 * e)), border_radius=2)
-            elif self.acessorio["nome"] == "Faixa Presidencial":
-                pt1 = (cx - int(18 * e), top_y + int(42 * e + bobbing))
-                pt2 = (cx + int(18 * e), top_y + int(85 * e + bobbing))
-                pygame.draw.line(tela, (20, 160, 40), pt1, pt2, max(4, int(9 * e)))
-                pygame.draw.line(tela, (255, 215, 0), pt1, pt2, max(2, int(4 * e)))
-            elif self.acessorio["nome"] == "Gravata Borboleta":
-                gy = top_y + int(44 * e + bobbing)
-                pygame.draw.polygon(tela, (220, 20, 20), [(cx, gy), (cx - int(10 * e), gy - int(6 * e)), (cx - int(10 * e), gy + int(6 * e))])
-                pygame.draw.polygon(tela, (220, 20, 20), [(cx, gy), (cx + int(10 * e), gy - int(6 * e)), (cx + int(10 * e), gy + int(6 * e))])
-                pygame.draw.circle(tela, (180, 10, 10), (cx, gy), int(3 * e))
-            elif self.acessorio["nome"] == "Chapéu Político":
-                hy = centro_cabeca[1] - raio_cabeca - int(4 * e)
-                pygame.draw.rect(tela, (40, 40, 50), (cx - int(22 * e), hy, int(44 * e), int(8 * e)))
-                pygame.draw.rect(tela, (40, 40, 50), (cx - int(14 * e), hy - int(12 * e), int(28 * e), int(14 * e)))
-
-        # Renderização do Texto Flutuante de Impacto acima do personagem
-        if self.tempo_texto_impacto > 0:
-            self.tempo_texto_impacto -= 1
-            fonte_impacto = pygame.font.SysFont('Arial', max(14, int(22 * e)), bold=True)
-            
-            # Texto amarelo com borda preta para contraste
-            txt_sombra = fonte_impacto.render(self.texto_impacto, True, (0, 0, 0))
-            txt_surf = fonte_impacto.render(self.texto_impacto, True, (255, 230, 0))
-            
-            subida_y = (25 - self.tempo_texto_impacto) * 1.5
-            pos_x = cx - txt_surf.get_width() // 2
-            pos_y = top_y - int(30 * e) - int(subida_y)
-
-            tela.blit(txt_sombra, (pos_x + 2, pos_y + 2))
-            tela.blit(txt_surf, (pos_x, pos_y))
+    def remover(self):
+        destroy(self.root)
