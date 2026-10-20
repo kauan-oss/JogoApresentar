@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import math
 import random
-from ursina import Entity, Vec3, color, destroy
+from ursina import Entity, Vec3, Cylinder, color, destroy
 
 ACESSORIOS = ["Nenhum", "Óculos Escuros", "Faixa Presidencial", "Gravata Borboleta", "Chapéu Político"]
 
@@ -176,7 +176,7 @@ class Lutador3D:
                        rotation_z=-22 * sx)
             esfera(p, (0, 2.056, .49), (.14, .15, .13), color.rgb(137, 18, 34))
         elif self.acessorio == "Chapéu Político":
-            Entity(parent=cabeca, model="cylinder", position=(0, .48, 0),
+            Entity(parent=cabeca, model=Cylinder(resolution=24, start=-.5), position=(0, .48, 0),
                    scale=(.94, .095, .87), color=color.rgb(34, 42, 61))
             esfera(cabeca, (0, .65, 0), (.60, .38, .55), color.rgb(41, 50, 69))
             esfera(cabeca, (0, .58, .30), (.57, .09, .10), color.rgb(222, 188, 57))
