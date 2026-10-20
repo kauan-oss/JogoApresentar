@@ -4,6 +4,7 @@ from __future__ import annotations
 import math
 import random
 from ursina import Entity, Vec3, Cylinder, color, destroy
+from ursina.shaders import basic_lighting_shader
 
 ACESSORIOS = ["Nenhum", "Óculos Escuros", "Faixa Presidencial", "Gravata Borboleta", "Chapéu Político"]
 
@@ -56,7 +57,7 @@ def rgb(valor):
 def esfera(pai, pos, escala, cor, **kwargs):
     """Volumes elipsoidais com silhuetas suaves, em vez de blocos."""
     return Entity(parent=pai, model="sphere", position=pos, scale=escala,
-                  color=cor, **kwargs)
+                  color=cor, shader=basic_lighting_shader, **kwargs)
 
 
 class Lutador3D:
@@ -177,7 +178,7 @@ class Lutador3D:
             esfera(p, (0, 2.056, .49), (.14, .15, .13), color.rgb(137, 18, 34))
         elif self.acessorio == "Chapéu Político":
             Entity(parent=cabeca, model=Cylinder(resolution=24, start=-.5), position=(0, .48, 0),
-                   scale=(.94, .095, .87), color=color.rgb(34, 42, 61))
+                   scale=(.94, .095, .87), color=color.rgb(34, 42, 61), shader=basic_lighting_shader)
             esfera(cabeca, (0, .65, 0), (.60, .38, .55), color.rgb(41, 50, 69))
             esfera(cabeca, (0, .58, .30), (.57, .09, .10), color.rgb(222, 188, 57))
 
