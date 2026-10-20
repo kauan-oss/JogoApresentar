@@ -212,7 +212,7 @@ def atualizar():
         if hud_state != last_hud_state:
             atualizar_hud()
 
-def input(tecla):
+def processar_input(tecla):
     global idx1,idx2,ac1,ac2
     if tecla=='f11': window.fullscreen=not window.fullscreen
     if estado=='menu':
@@ -235,4 +235,13 @@ def input(tecla):
     elif tecla=='escape' and estado in ('luta','fim'):
         menu()
 
+class ControladorJogo(Entity):
+    # Os callbacks como métodos de uma Entity funcionam mesmo quando este módulo é importado por main.py.
+    def update(self):
+        atualizar()
+
+    def input(self, tecla):
+        processar_input(tecla)
+
 menu()
+controlador_jogo = ControladorJogo()
