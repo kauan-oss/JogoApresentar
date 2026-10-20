@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import math
-from ursina import Entity, Mesh, Sky, AmbientLight, DirectionalLight, Vec3, color
+from ursina import Entity, Mesh, Cylinder, Sky, AmbientLight, DirectionalLight, Vec3, color
 
 
 def arco_horizontal(raio_x, raio_z, y, largura=.065, segmentos=80, cor=None, pai=None):
@@ -26,6 +26,7 @@ def arco_horizontal(raio_x, raio_z, y, largura=.065, segmentos=80, cor=None, pai
 class Arena:
     def __init__(self):
         self.root = Entity()
+        self.modelo_cilindro = Cylinder(resolution=24, start=-.5)
         Sky(color=color.rgb(12, 23, 47))
         AmbientLight(color=color.rgb(100, 111, 142))
         sol = DirectionalLight()
@@ -88,5 +89,5 @@ class Arena:
                       scale=escala, color=color.rgb(*rgb), **kwargs)
 
     def cilindro(self, pos, escala, rgb):
-        return Entity(parent=self.root, model="cylinder", position=pos,
+        return Entity(parent=self.root, model=self.modelo_cilindro, position=pos,
                       scale=escala, color=color.rgb(*rgb))
