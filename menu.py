@@ -1,14 +1,25 @@
-import pygame
+"""Componentes de interface feitos com Ursina; não utiliza Pygame."""
+from ursina import Button, Text, destroy, color
 
-def desenhar_painel_controles(tela, largura, altura, fonte_p):
-    y_ctrl = altura - 110
-    pygame.draw.rect(tela, (20, 25, 40, 200), (40, y_ctrl, largura - 80, 95), border_radius=10)
-    pygame.draw.rect(tela, (255, 215, 0), (40, y_ctrl, largura - 80, 95), width=2, border_radius=10)
-    
-    t_p1 = fonte_p.render("P1: W,A,S,D (Mover 3D) | F (Soco) | G (Chute)", True, (255, 255, 255))
-    t_p2 = fonte_p.render("P2: Setas (Mover 3D) | K ou Ç (Soco) | L (Chute)", True, (255, 255, 255))
-    t_fs = fonte_p.render("F11: Tela Cheia | R: Sortear/Resetar Vitórias | ENTER: Iniciar", True, (255, 215, 0))
-    
-    tela.blit(t_p1, (largura // 2 - t_p1.get_width() // 2, y_ctrl + 12))
-    tela.blit(t_p2, (largura // 2 - t_p2.get_width() // 2, y_ctrl + 38))
-    tela.blit(t_fs, (largura // 2 - t_fs.get_width() // 2, y_ctrl + 64))
+def limpar_ui(elementos):
+    for elemento in elementos[:]:
+        destroy(elemento)
+    elementos.clear()
+
+def texto(conteudo, pos, escala=1, cor=color.white, elementos=None, **kwargs):
+    elemento = Text(conteudo, position=pos, scale=escala, color=cor, **kwargs)
+    if elementos is not None:
+        elementos.append(elemento)
+    return elemento
+
+def botao(conteudo, pos, acao, elementos=None, escala=(.28,.065), cor=color.rgb(45,55,78)):
+    elemento = Button(text=conteudo, position=pos, scale=escala, color=cor,
+                      highlight_color=color.azure, pressed_color=color.gold, on_click=acao)
+    if elementos is not None:
+        elementos.append(elemento)
+    return elemento
+
+def desenhar_painel_controles(elementos=None):
+    """Adiciona instruções de controles à interface 3D."""
+    return texto("P1: WASD + F soco + G chute   |   P2: Setas + K soco + L chute",
+                 (-.48,-.46), .75, elementos=elementos)
