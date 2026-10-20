@@ -104,9 +104,9 @@ class Partida:
                 random.uniform(-.45, .45),
                 random.uniform(-.32, .32)),
                 scale=random.uniform(.08, .22),
-                color=random.choice([color.rgb(255, 207, 95),
-                                     color.rgb(241, 97, 112),
-                                     color.rgb(99, 226, 245)]))
+                color=random.choice([color.rgb32(255, 207, 95),
+                                     color.rgb32(241, 97, 112),
+                                     color.rgb32(99, 226, 245)]))
             esfera.animate_scale(0, duration=.27)
             destroy(esfera, delay=.32)
 
@@ -221,7 +221,7 @@ def iniciar():
     app = Ursina(title="Eleições Fighting Arena 3D", borderless=False,
                  fullscreen=False, size=(1280, 720), vsync=True,
                  development_mode=False)
-    window.color = color.rgb(12, 23, 47)
+    window.color = color.rgb32(12, 23, 47)
     window.exit_button.visible = False
     window.fps_counter.enabled = False
     mouse.visible = True
