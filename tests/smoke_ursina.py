@@ -1,5 +1,5 @@
 """Renderiza o jogo num display virtual e valida cores de cena e lutadores."""
-from panda3d.core import Filename
+from panda3d.core import Filename, PNMImage
 from ursina import Ursina, Vec3, camera, application, color
 from main import Partida
 
@@ -43,8 +43,10 @@ def main():
         app.step()
 
     # Validacao da imagem real, em vez de apenas checar imports.
-    screenshot = app.win.getScreenshot()
-    assert screenshot is not None
+    textura = app.win.getScreenshot()
+    assert textura is not None
+    screenshot = PNMImage()
+    assert textura.store(screenshot), 'Falha ao ler a imagem da GPU'
     largura, altura = screenshot.getXSize(), screenshot.getYSize()
     pontos = [screenshot.getXel(x, y)
               for y in range(25, altura - 25, 32)
