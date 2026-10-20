@@ -1,5 +1,5 @@
-"""Ponto de entrada do jogo 3D baseado no motor Ursina."""
-from ursina_game import app
+"""Ponto de entrada do Eleições Fighting Game 3D."""
+from ursina_game import iniciar_aplicacao
 
 if __name__ == "__main__":
-    app.run()
+    iniciar_aplicacao()
