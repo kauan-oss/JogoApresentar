@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import math
 from ursina import Entity, Mesh, Cylinder, Sky, AmbientLight, DirectionalLight, Vec3, color
+from ursina.shaders import basic_lighting_shader
 
 
 def arco_horizontal(raio_x, raio_z, y, largura=.065, segmentos=80, cor=None, pai=None):
@@ -71,12 +72,12 @@ class Arena:
             x = sx * 9.85
             self.cilindro((x, 1.8, 4.7), (.10, 3.6, .10), (181, 190, 199))
             Entity(parent=self.root, model="sphere", position=(x, 3.70, 4.7),
-                   scale=.22, color=color.rgb(249, 210, 75))
+                   scale=.22, color=color.rgb(249, 210, 75), shader=basic_lighting_shader)
             self.bloco((x + sx * .55, 2.90, 4.7), (1.02, .64, .07), (29, 139, 71))
             self.bloco((x + sx * .55, 2.90, 4.61), (.58, .34, .06), (231, 198, 64))
             self.cilindro((x, .78, -4.3), (.55, 1.55, .55), (40, 62, 99))
             Entity(parent=self.root, model="sphere", position=(x, 1.7, -4.3),
-                   scale=.70, color=color.rgb(97, 205, 217))
+                   scale=.70, color=color.rgb(97, 205, 217), shader=basic_lighting_shader)
 
         for x in (-6.8, 6.8):
             # Focos de luz sobre as entradas da arena.
@@ -86,8 +87,8 @@ class Arena:
 
     def bloco(self, pos, escala, rgb, **kwargs):
         return Entity(parent=self.root, model="cube", position=pos,
-                      scale=escala, color=color.rgb(*rgb), **kwargs)
+                      scale=escala, color=color.rgb(*rgb), shader=basic_lighting_shader, **kwargs)
 
     def cilindro(self, pos, escala, rgb):
         return Entity(parent=self.root, model=self.modelo_cilindro, position=pos,
-                      scale=escala, color=color.rgb(*rgb))
+                      scale=escala, color=color.rgb(*rgb), shader=basic_lighting_shader)
