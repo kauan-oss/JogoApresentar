@@ -231,4 +231,3 @@ def input(tecla):
         menu()
 
 menu()
-app.run()
