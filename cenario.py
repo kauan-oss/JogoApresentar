@@ -28,8 +28,8 @@ class Arena:
     def __init__(self):
         self.root = Entity()
         self.modelo_cilindro = Cylinder(resolution=24, start=-.5)
-        Sky(color=color.rgb(12, 23, 47))
-        AmbientLight(color=color.rgb(100, 111, 142))
+        Sky(color=color.rgb32(12, 23, 47))
+        AmbientLight(color=color.rgb32(100, 111, 142))
         sol = DirectionalLight()
         sol.look_at(Vec3(1, -3, -2))
 
@@ -40,9 +40,9 @@ class Arena:
         self.cilindro((0, -.17, 0), (21.2, .34, 11.2), (63, 78, 96))
         self.cilindro((0, -.09, 0), (20.4, .19, 10.7), (35, 48, 73))
 
-        arco_horizontal(9.9, 5.1, .045, .065, cor=color.rgb(255, 197, 75), pai=self.root)
-        arco_horizontal(9.45, 4.65, .047, .025, cor=color.rgb(56, 199, 208), pai=self.root)
-        arco_horizontal(7.7, 3.58, .05, .018, cor=color.rgb(85, 132, 172), pai=self.root)
+        arco_horizontal(9.9, 5.1, .045, .065, cor=color.rgb32(255, 197, 75), pai=self.root)
+        arco_horizontal(9.45, 4.65, .047, .025, cor=color.rgb32(56, 199, 208), pai=self.root)
+        arco_horizontal(7.7, 3.58, .05, .018, cor=color.rgb32(85, 132, 172), pai=self.root)
         for i in range(13):
             x = (i - 6) * 1.22
             self.bloco((x, .045, 0), (.025, .013, 7.1), (45, 68, 100))
@@ -72,23 +72,23 @@ class Arena:
             x = sx * 9.85
             self.cilindro((x, 1.8, 4.7), (.10, 3.6, .10), (181, 190, 199))
             Entity(parent=self.root, model="sphere", position=(x, 3.70, 4.7),
-                   scale=.22, color=color.rgb(249, 210, 75), shader=basic_lighting_shader)
+                   scale=.22, color=color.rgb32(249, 210, 75), shader=basic_lighting_shader)
             self.bloco((x + sx * .55, 2.90, 4.7), (1.02, .64, .07), (29, 139, 71))
             self.bloco((x + sx * .55, 2.90, 4.61), (.58, .34, .06), (231, 198, 64))
             self.cilindro((x, .78, -4.3), (.55, 1.55, .55), (40, 62, 99))
             Entity(parent=self.root, model="sphere", position=(x, 1.7, -4.3),
-                   scale=.70, color=color.rgb(97, 205, 217), shader=basic_lighting_shader)
+                   scale=.70, color=color.rgb32(97, 205, 217), shader=basic_lighting_shader)
 
         for x in (-6.8, 6.8):
             # Focos de luz sobre as entradas da arena.
             self.cilindro((x, .63, 5.0), (.61, 1.26, .61), (30, 52, 85))
             Entity(parent=self.root, model="sphere", position=(x, 1.36, 5.0),
-                   scale=(.63, .20, .63), color=color.rgb(246, 194, 89))
+                   scale=(.63, .20, .63), color=color.rgb32(246, 194, 89))
 
     def bloco(self, pos, escala, rgb, **kwargs):
         return Entity(parent=self.root, model="cube", position=pos,
-                      scale=escala, color=color.rgb(*rgb), shader=basic_lighting_shader, **kwargs)
+                      scale=escala, color=color.rgb32(*rgb), shader=basic_lighting_shader, **kwargs)
 
     def cilindro(self, pos, escala, rgb):
         return Entity(parent=self.root, model=self.modelo_cilindro, position=pos,
-                      scale=escala, color=color.rgb(*rgb), shader=basic_lighting_shader)
+                      scale=escala, color=color.rgb32(*rgb), shader=basic_lighting_shader)
