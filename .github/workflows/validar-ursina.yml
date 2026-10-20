@@ -23,3 +23,10 @@ jobs:
         run: python -c "import main, personagem, cenario, menu; print('Modulos Ursina OK')"
       - name: Abrir o jogo no display virtual
         run: PYTHONPATH=. xvfb-run -a timeout 55s python tests/smoke_ursina.py
+      - name: Guardar imagem 3D validada
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-ursina-3d
+          path: preview-ursina.png
+          if-no-files-found: ignore
