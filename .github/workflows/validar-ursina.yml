@@ -22,4 +22,4 @@ jobs:
       - name: Validar imports do jogo
         run: python -c "import main, personagem, cenario, menu; print('Modulos Ursina OK')"
       - name: Abrir o jogo no display virtual
-        run: xvfb-run -a timeout 55s python tests/smoke_ursina.py
+        run: PYTHONPATH=. xvfb-run -a timeout 55s python tests/smoke_ursina.py
